@@ -12,6 +12,7 @@
 <body class="bg-blue-50 font-sans">
     <!-- NavBar, includes 3 tabs-->
 <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm ">
+    
 
 <nav class="flex items-center justify-between px-6 py-4 border-b border-gray-100 ">
 
@@ -25,6 +26,45 @@
 
     </nav>
 </div>
-</body>
 
+<!--Weight Conversion, I think I have to move these into a single box, will try later using <select> -->
+
+<form>
+<div class="px-4 md:px-6" >
+     <div class="bg-gradient-to-br from-orange-200 to-green-800 rounded-2xl text-blue-900 text-center p-6 md:p-10 lg:p-16 mb-6">
+        <h1 class="">Convert Pounds (lb.) to kilograms (kg)</h1>
+        <input id="Pounds" class="rounded-xl" >  
+        
+            <!--Responsive Button, id needed for js later-->
+            <button id="poundstokilograms" class="bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-800 text-sm md:text-base px-4 md:px-6">
+                Convert
+            </button>
+ <!--Empty Div for displaying conversion results-->
+<div id="poundstokilograms-result" class="mt-6 text-white font-bold text-center border-b">
+</div>
+
+</div>
+
+<div class= >
+     <div class="bg-gradient-to-br from-green-200 to-orange-800 rounded-2xl text-blue-900 text-center p-6 md:p-10 lg:p-16 mb-6">
+        <h1 class="">Convert kilograms (kg) to Pounds (lb.)</h1>
+        <input id="Kilograms" class="rounded-xl">  
+        
+            <!--Responsive Button, id needed for js later-->
+            <button id="kilotopounds" class="bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-800 text-sm md:text-base px-4 md:px-6">
+                Convert
+            </button>
+ 
+ <!--Empty Div for displaying conversion results-->
+<div id="kilotopounds-result" class="mt-6 text-white font-bold text-center border-b ">
+</div>
+</div>
+</form>
+
+
+
+
+</body>
+<!-- Link to js for when needed-->
+<script src="js/js.js"></script>
 </html>
