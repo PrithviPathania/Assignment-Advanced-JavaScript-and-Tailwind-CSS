@@ -23,8 +23,7 @@
 */
 
 
-/* ---------- Conversion math lookup table ---------- */
-// Each key is "from-to" and the value is an arrow function for a single number.
+// Conversion math lookup table
 const conversionFormulas = {
     "lb-kg":  (value) => value * 0.45359237,
     "kg-lb":  (value) => value * 2.20462262,
@@ -35,7 +34,6 @@ const conversionFormulas = {
 };
 
 
-/* ---------- Higher-order conversion factory ---------- */
 // Takes the unit to convert FROM and the unit to convert TO.
 // Returns an arrow function that converts either a single value or an array.
 function makeConverter(fromUnit, toUnit) {
@@ -52,7 +50,6 @@ function makeConverter(fromUnit, toUnit) {
 }
 
 
-/* ---------- Input parsing helper ---------- */
 // Splits a string on commas or whitespace and returns an array of numbers.
 // Returns null if any token is not a valid number.
 function parseValues(rawText) {
@@ -74,7 +71,6 @@ function parseValues(rawText) {
 }
 
 
-/* ---------- Result formatting helper ---------- */
 // Rounds each number to 2 decimals and joins a list with commas.
 function formatResult(values, unitLabel) {
     const rounded = values.map((value) => value.toFixed(2));
@@ -82,7 +78,6 @@ function formatResult(values, unitLabel) {
 }
 
 
-/* ---------- Form handler shared by all three pages ---------- */
 // pageConfig describes the dropdown options for this page so one handler
 // can drive Weight, Distance, and Temperature.
 function handleConvert(pageConfig) {
@@ -108,7 +103,6 @@ function handleConvert(pageConfig) {
 }
 
 
-/* ---------- Page configurations ---------- */
 // Each page wires up its own dropdown options when the DOM is ready.
 const pageConfigs = {
     weight: {
@@ -132,7 +126,6 @@ const pageConfigs = {
 };
 
 
-/* ---------- Wire up the convert button when the page loads ---------- */
 document.addEventListener("DOMContentLoaded", () => {
     const page = document.body.dataset.page;
     const config = pageConfigs[page];
