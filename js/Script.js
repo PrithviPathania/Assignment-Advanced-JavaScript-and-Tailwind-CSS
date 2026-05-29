@@ -1,48 +1,150 @@
-// Krish Choudhary
+/*
+    Authors:      Krish Choudhary, Prithvi Pathania, Ricky Mormor
+    Date:         2026-05-29
+    Course:       CPRG 306 B - Advanced JavaScript and Tailwind CSS
 
-function convertWeight() {
+    Program description:
+    This script powers a static unit-conversion website that converts between
+    metric and imperial units (kilograms/pounds, kilometres/miles, Celsius/Fahrenheit).
+    A single higher-order function, makeConverter(fromUnit, toUnit), returns an
+    arrow-notation conversion function for the requested pair. The returned
+    converter accepts either a single numeric value or an array of numeric
+    values and returns the converted value or array of converted values.
 
-    let kg = parseFloat(document.getElementById("kg").value);
+    Inputs:      User-entered number(s) from a text input on the Weight,
+                 Distance, or Temperature page, and a dropdown selection
+                 describing which direction to convert.
+    Processing:  makeConverter looks up the correct math for the chosen unit
+                 pair and returns an arrow function. handleConvert reads the
+                 form, splits comma- or space-separated input into an array
+                 when needed, calls the converter, and formats the result.
+    Outputs:     The converted value(s) are written into the result div on
+                 the page, rounded to two decimal places.
+*/
 
-    if (isNaN(kg)) {
-        document.getElementById("result").innerText = "Please enter a valid number";
-        return;
+
+/* ---------- Conversion math lookup table ---------- */
+// Each key is "from-to" and the value is an arrow function for a single number.
+const conversionFormulas = {
+    "lb-kg":  (value) => value * 0.45359237,
+    "kg-lb":  (value) => value * 2.20462262,
+    "mi-km":  (value) => value * 1.609344,
+    "km-mi":  (value) => value * 0.62137119,
+    "c-f":    (value) => (value * 9 / 5) + 32,
+    "f-c":    (value) => (value - 32) * 5 / 9,
+};
+
+
+/* ---------- Higher-order conversion factory ---------- */
+// Takes the unit to convert FROM and the unit to convert TO.
+// Returns an arrow function that converts either a single value or an array.
+function makeConverter(fromUnit, toUnit) {
+    const key = `${fromUnit}-${toUnit}`;
+    const formula = conversionFormulas[key];
+
+    if (!formula) {
+        throw new Error(`No conversion available from ${fromUnit} to ${toUnit}`);
     }
 
-    let pounds = kg * 2.20462;
-
-    document.getElementById("result").innerText =
-        kg + " Kilograms = " + pounds.toFixed(2) + " Pounds";
+    return (input) => Array.isArray(input)
+        ? input.map((value) => formula(value))
+        : formula(input);
 }
 
 
-function convertDistance() {
+/* ---------- Input parsing helper ---------- */
+// Splits a string on commas or whitespace and returns an array of numbers.
+// Returns null if any token is not a valid number.
+function parseValues(rawText) {
+    const tokens = rawText
+        .split(/[\s,]+/)
+        .map((token) => token.trim())
+        .filter((token) => token.length > 0);
 
-    let km = parseFloat(document.getElementById("km").value);
-
-    if (isNaN(km)) {
-        document.getElementById("result").innerText = "Please enter a valid number";
-        return;
+    if (tokens.length === 0) {
+        return null;
     }
 
-    let miles = km * 0.621371;
+    const numbers = tokens.map((token) => parseFloat(token));
+    if (numbers.some((number) => isNaN(number))) {
+        return null;
+    }
 
-    document.getElementById("result").innerText =
-        km + " Kilometers = " + miles.toFixed(2) + " Miles";
+    return numbers;
 }
 
 
-function convertTemperature() {
+/* ---------- Result formatting helper ---------- */
+// Rounds each number to 2 decimals and joins a list with commas.
+function formatResult(values, unitLabel) {
+    const rounded = values.map((value) => value.toFixed(2));
+    return `${rounded.join(", ")} ${unitLabel}`;
+}
 
-    let celsius = parseFloat(document.getElementById("celsius").value);
 
-    if (isNaN(celsius)) {
-        document.getElementById("result").innerText = "Please enter a valid number";
+/* ---------- Form handler shared by all three pages ---------- */
+// pageConfig describes the dropdown options for this page so one handler
+// can drive Weight, Distance, and Temperature.
+function handleConvert(pageConfig) {
+    const direction = document.getElementById("direction").value;
+    const rawInput  = document.getElementById("values").value;
+    const resultBox = document.getElementById("result");
+
+    const option = pageConfig.options[direction];
+    if (!option) {
+        resultBox.innerText = "Please choose a conversion.";
         return;
     }
 
-    let fahrenheit = (celsius * 9/5) + 32;
+    const numbers = parseValues(rawInput);
+    if (numbers === null) {
+        resultBox.innerText = "Please enter one or more valid numbers (separated by commas or spaces).";
+        return;
+    }
 
-    document.getElementById("result").innerText =
-        celsius + "°C = " + fahrenheit.toFixed(2) + "°F";
+    const converter = makeConverter(option.from, option.to);
+    const converted = converter(numbers);
+    resultBox.innerText = formatResult(converted, option.toLabel);
 }
+
+
+/* ---------- Page configurations ---------- */
+// Each page wires up its own dropdown options when the DOM is ready.
+const pageConfigs = {
+    weight: {
+        options: {
+            "lb-kg": { from: "lb", to: "kg", toLabel: "kg" },
+            "kg-lb": { from: "kg", to: "lb", toLabel: "lb" },
+        },
+    },
+    distance: {
+        options: {
+            "mi-km": { from: "mi", to: "km", toLabel: "km" },
+            "km-mi": { from: "km", to: "mi", toLabel: "mi" },
+        },
+    },
+    temperature: {
+        options: {
+            "c-f": { from: "c", to: "f", toLabel: "°F" },
+            "f-c": { from: "f", to: "c", toLabel: "°C" },
+        },
+    },
+};
+
+
+/* ---------- Wire up the convert button when the page loads ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+    const page = document.body.dataset.page;
+    const config = pageConfigs[page];
+    if (!config) {
+        return; // index.html or any page without a converter form
+    }
+
+    const button = document.getElementById("convert");
+    if (button) {
+        button.addEventListener("click", (event) => {
+            event.preventDefault();
+            handleConvert(config);
+        });
+    }
+});
