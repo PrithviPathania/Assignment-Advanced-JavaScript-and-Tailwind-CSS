@@ -1,6 +1,6 @@
 # Assignment: Advanced JavaScript and Tailwind CSS
 
-Group project for CPRG 306 B. A small static site that converts between metric and imperial units &mdash; kilograms and pounds, kilometres and miles, Celsius and Fahrenheit. Built with Tailwind CSS (Play CDN) and one JS file.
+Group 7's project for CPRG 306 B. A small static responsive site that converts between metric and imperial units &mdash; kilograms and pounds, kilometres and miles, Celsius and Fahrenheit. Built & made responsive with Tailwind CSS. With one JS file containing the java script for all the pages functions.
 
 Four pages: a landing page (`index.html`) plus one each for weight, distance, and temperature. Each converter is the same shape: a dropdown to pick the direction (lb to kg or kg to lb, etc.) and an input that takes either a single number or a comma/space-separated list.
 
